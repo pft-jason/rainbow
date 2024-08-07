@@ -5,6 +5,7 @@ import os
 from django.conf import settings
 from io import BytesIO
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 
 
 class Category(models.Model):

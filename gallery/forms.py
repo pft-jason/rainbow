@@ -19,6 +19,7 @@ class ImageUploadForm(forms.ModelForm):
         required=False,
         widget=forms.CheckboxSelectMultiple()
     )
+    image = forms.FileField()
 
     class Meta:
         model = Image

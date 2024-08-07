@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from PIL import Image as PilImage
 import os
 from django.conf import settings
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 
 class Category(models.Model):
@@ -32,8 +34,9 @@ class OfficialTag(models.Model):
 
 class Image(models.Model):
     title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='images/')
-    gallery_image = models.ImageField(upload_to='gallery_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='gallery_images/', default='gallery_images/default.jpg')
+    full_image_url = models.URLField(max_length=200, default='https://via.placeholder.com/512')
+    gallery_image = models.ImageField(upload_to='gallery_images/', null=True, blank=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True)
@@ -51,14 +54,23 @@ class Image(models.Model):
         super().save(*args, **kwargs)
         
         if self.image and not self.gallery_image:
-            img = PilImage.open(self.image.path)
+            img = PilImage.open(self.image)
             output_size = (512, 512)  # Define the size for the gallery image
             img.thumbnail(output_size)
             
             # Save the resized image to the gallery_image field
-            gallery_image_path = os.path.join('gallery_images', os.path.basename(self.image.name))
-            img.save(os.path.join(settings.MEDIA_ROOT, gallery_image_path))
-            self.gallery_image = gallery_image_path
+            buffer = BytesIO()
+            img.save(buffer, format='JPEG')
+            buffer.seek(0)
+            file_name = f'gallery_{os.path.basename(self.image.name)}'
+            self.gallery_image.save(file_name, ContentFile(buffer.read()), save=False)
+            
+            # Set the full image URL
+            if settings.ENVIRONMENT == 'production':
+                self.full_image_url = default_storage.url(self.image.name)
+            else:
+                self.full_image_url = f'/media/{self.image.name}'
+            
             super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):

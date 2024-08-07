@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Image Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="display-4">{{ image.title }}</h1>
+            <div class="card mb-3">
+                <a href="{% url 'full_screen_image' image.pk %}">
+                    <img src="{{ image.image.url }}" alt="{{ image.title }}" style="max-width: 800px; width: 100%; height: auto;" class="img-fluid">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p class="card-text">{{ image.description }}</p>
+                    <p class="card-text"><small class="text-muted">Uploaded by {{ image.uploaded_by.username }} on {{ image.uploaded_at }}</small></p>
+                    <p class="card-text"><strong>Categories:</strong> {{ image.categories.all|join:", " }}</p>
+                    <p class="card-text"><strong>Tags:</strong> {{ image.tags.all|join:", " }}</p>
+                    <p class="card-text"><strong>Favorites:</strong> {{ image.favorites.count }}</p>
+                    <p class="card-text"><strong>Downloads:</strong> {{ image.downloads }}</p>
+                </div>
+            </div>
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'favorite_image' image.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn {% if is_favorited %}btn-secondary{% else %}btn-primary{% endif %}">
+                                {% if is_favorited %}Unfavorite{% else %}Favorite{% endif %}
+                            </button>
+                        </form>
+                        <a href="{% url 'download_image' image.pk %}" class="btn btn-success">Download</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Login to favorite or download images</a>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if user.is_authenticated and user == image.uploaded_by %}
+                        <a href="{% url 'edit_image' image.pk %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_image' image.pk %}" class="btn btn-danger">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <h3 id="comments-section">Comments</h3>
+            {% if user.is_authenticated %}
+                <div class="card bg-light p-3 mb-3">
+                    <h4>Add a Comment</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ comment_form.text }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Comment</button>
+                    </form>
+                </div>
+            {% else %}
+                <p>You must be logged in to add a comment.</p>
+            {% endif %}
+
+            <ul class="list-unstyled">
+                {% for comment in comments %}
+                    <li class="mb-2">
+                        <div class="border-bottom pb-2">
+                            <p class="font-weight-bold mb-1">{{ comment.text }}</p>
+                            <p class="text-muted">— {{ comment.user.username }} on {{ comment.created_at }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('new_comment')) {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    });
+</script>
+
+{% endblock %}

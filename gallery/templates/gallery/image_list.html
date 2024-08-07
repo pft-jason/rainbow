@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Image Gallery{% endblock %}
+
+{% block content %}
+
+<!-- Centering container -->
+<div class="text-center mb-4">
+    <div class="row">
+        <!-- Filter Buttons -->
+        <div class="col-md-6 d-flex justify-content-start">
+            <div class="btn-group" role="group" aria-label="Filter Buttons">
+                <a href="{% url 'image_list' %}?filter=all&sort={{ sort_by }}{% for tag in selected_tags %}&tags={{ tag }}{% endfor %}" class="btn btn-outline-primary {% if filter_by == 'all' %}active{% endif %}">All</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'image_list' %}?filter=favorites&sort={{ sort_by }}{% for tag in selected_tags %}&tags={{ tag }}{% endfor %}" class="btn btn-outline-primary {% if filter_by == 'favorites' %}active{% endif %}">Favorites</a>
+                    <a href="{% url 'image_list' %}?filter=uploads&sort={{ sort_by }}{% for tag in selected_tags %}&tags={{ tag }}{% endfor %}" class="btn btn-outline-primary {% if filter_by == 'uploads' %}active{% endif %}">Uploads</a>
+                {% else %}
+                    <a href="#" class="btn btn-outline-primary disabled" style="color: grey; border-color: grey;">Favorites</a>
+                    <a href="#" class="btn btn-outline-primary disabled" style="color: grey; border-color: grey;">Uploads</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sort Buttons -->
+        <div class="col-md-6 d-flex justify-content-end">
+            <div class="btn-group" role="group" aria-label="Sort Buttons">
+                <a href="{% url 'image_list' %}?sort=new&filter={{ filter_by }}{% for tag in selected_tags %}&tags={{ tag }}{% endfor %}" class="btn btn-outline-primary {% if sort_by == 'new' %}active{% endif %}">Newest</a>
+                <a href="{% url 'image_list' %}?sort=favorite&filter={{ filter_by }}{% for tag in selected_tags %}&tags={{ tag }}{% endfor %}" class="btn btn-outline-primary {% if sort_by == 'favorite' %}active{% endif %}">Most Favorited</a>
+                <a href="{% url 'image_list' %}?sort=downloads&filter={{ filter_by }}{% for tag in selected_tags %}&tags={{ tag }}{% endfor %}" class="btn btn-outline-primary {% if sort_by == 'downloads' %}active{% endif %}">Most Downloaded</a>
+                <a href="{% url 'image_list' %}?sort=popular&filter={{ filter_by }}{% for tag in selected_tags %}&tags={{ tag }}{% endfor %}" class="btn btn-outline-primary {% if sort_by == 'popular' %}active{% endif %}">Popular</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tag Filters -->
+<form method="get" action="{% url 'image_list' %}">
+    <input type="hidden" name="filter" value="{{ filter_by }}">
+    <input type="hidden" name="sort" value="{{ sort_by }}">
+    <div class="accordion mb-4" id="filterAccordion">
+
+        <!-- Age Filter -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingAge">
+                <button class="accordion-button collapsed custom-accordion-header" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAge" aria-expanded="false" aria-controls="collapseAge" data-label="Age">
+                    Age
+                    <span class="selected-tags"></span>
+                </button>
+            </h2>
+            <div id="collapseAge" class="accordion-collapse collapse" aria-labelledby="headingAge" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+                    <div class="row">
+                        {% for tag in all_tags %}
+                            {% if tag.category == 'age' %}
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="tags" value="{{ tag.name }}" {% if tag.name in selected_tags %}checked{% endif %} id="age-{{ tag.name|slugify }}">
+                                        <label class="form-check-label" for="age-{{ tag.name|slugify }}">
+                                            {{ tag.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body Type Filter -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingBody">
+                <button class="accordion-button collapsed custom-accordion-header" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBody" aria-expanded="false" aria-controls="collapseBody" data-label="Body Type">
+                    Body Type
+                    <span class="selected-tags"></span>
+                </button>
+            </h2>
+            <div id="collapseBody" class="accordion-collapse collapse" aria-labelledby="headingBody" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+                    <div class="row">
+                        {% for tag in all_tags %}
+                            {% if tag.category == 'body' %}
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="tags" value="{{ tag.name }}" {% if tag.name in selected_tags %}checked{% endif %} id="body-{{ tag.name|slugify }}">
+                                        <label class="form-check-label" for="body-{{ tag.name|slugify }}">
+                                            {{ tag.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ethnicity Filter -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingEthnicity">
+                <button class="accordion-button collapsed custom-accordion-header" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEthnicity" aria-expanded="false" aria-controls="collapseEthnicity" data-label="Ethnicity">
+                    Ethnicity
+                    <span class="selected-tags"></span>
+                </button>
+            </h2>
+            <div id="collapseEthnicity" class="accordion-collapse collapse" aria-labelledby="headingEthnicity" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+                    <div class="row">
+                        {% for tag in all_tags %}
+                            {% if tag.category == 'ethnicity' %}
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="tags" value="{{ tag.name }}" {% if tag.name in selected_tags %}checked{% endif %} id="ethnicity-{{ tag.name|slugify }}">
+                                        <label class="form-check-label" for="ethnicity-{{ tag.name|slugify }}">
+                                            {{ tag.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interest Filter -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingInterest">
+                <button class="accordion-button collapsed custom-accordion-header" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInterest" aria-expanded="false" aria-controls="collapseInterest" data-label="Interest">
+                    Interest
+                    <span class="selected-tags"></span>
+                </button>
+            </h2>
+            <div id="collapseInterest" class="accordion-collapse collapse" aria-labelledby="headingInterest" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+                    <div class="row">
+                        {% for tag in all_tags %}
+                            {% if tag.category == 'interest' %}
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="tags" value="{{ tag.name }}" {% if tag.name in selected_tags %}checked{% endif %} id="interest-{{ tag.name|slugify }}">
+                                        <label class="form-check-label" for="interest-{{ tag.name|slugify }}">
+                                            {{ tag.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<!-- Centered Filter Button -->
+<div class="d-flex justify-content-end mt-4">
+    <a href="{% url 'image_list' %}?filter={{ filter_by }}&sort={{ sort_by }}" class="btn btn-outline-secondary">Clear Filters</a>
+    <button type="submit" class="btn btn-outline-primary btn-lg" style="font-size: 16px; margin-left: 10px;">Apply Filters</button>
+</div>
+
+
+
+<!-- Image List -->
+<div class="container">
+    <div class="row g-4 mt-5">
+        {% for image in page_obj %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <a href="{% url 'image_detail' image.id %}" class="text-decoration-none text-dark">
+                        {% if image.gallery_image %}
+                            <img src="{{ image.gallery_image.url }}" class="card-img-top" alt="{{ image.title }}">
+                        {% else %}
+                            <img src="{% static 'default_image.jpg' %}" class="card-img-top" alt="Default Image">
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ image.title }}</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mt-4">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-outline-primary mx-1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mx-1">previous</a>
+        {% endif %}
+        <span class="current btn btn-light mx-1">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mx-1">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mx-1">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+<!-- Include this script at the end of your content block -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to update the accordion headers with selected tags
+        function updateAccordionHeader() {
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                const baseLabel = header.querySelector('.accordion-button').getAttribute('data-label');
+                const panelId = header.querySelector('.accordion-button').getAttribute('data-bs-target');
+                const selectedTags = Array.from(document.querySelector(panelId).querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.parentElement.textContent.trim());
+                
+                const selectedText = selectedTags.length > 0 ? `: ${selectedTags.join(', ')}` : '';
+                header.querySelector('.selected-tags').textContent = selectedText;
+            });
+        }
+
+        // Add event listeners to all checkboxes to trigger the update
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateAccordionHeader);
+        });
+
+        // Initialize the accordion headers with any pre-selected tags
+        updateAccordionHeader();
+    });
+</script>
+{% endblock %}

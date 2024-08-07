@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Image Gallery{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pb-4">
+    <div class="row">
+        <div class="col-md-4 card shadow-sm">
+            <h1 class="ps-3 pt-3">Profile Page</h1>
+                <div class="card-body">
+                    <h4 class="card-title">Welcome, {{ user.username }}!</h4>
+                    <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+                    <!-- Additional user-specific details can be added here -->
+                </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <h2>Pending Moderation Images</h2>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for image in pending_uploaded_images %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <img src="{{ image.gallery_image.url }}" alt="{{ image.title }}" class="img-fluid" style="max-width: 100px; height: auto;">
+                            <strong>{{ image.title }}</strong>
+                        </div>
+                        <div>
+                            <a href="{% url 'edit_image' image.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'delete_image' image.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h2>Notifications</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                        <h3>Coming Soon!</h3>
+                    </div>
+                    <!-- <div class="row">
+                        {% for image in page_obj %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <a href="{% url 'image_detail' image.pk %}">
+                                    <img src="{{ image.gallery_image.url }}" alt="{{ image.title }}" class="card-img-top img-fluid">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ image.title }}</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{% url 'edit_image' image.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                                        <a href="{% url 'delete_image' image.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div> -->
+                    <!-- <div class="d-flex justify-content-center">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+                                {% endif %}
+                        
+                                <li class="page-item active"><a class="page-link" href="#">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+                        
+                                {% if page_obj.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

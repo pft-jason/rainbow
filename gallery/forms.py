@@ -40,6 +40,7 @@ class ImageUploadForm(forms.ModelForm):
             self.fields.pop('official_tags')
 
     def save(self, commit=True):
+        
         image = super().save(commit=False)
         image.uploaded_by = self.user
         image.moderated = self.user.is_staff if self.user else False

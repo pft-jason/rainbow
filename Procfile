@@ -1,1 +1,1 @@
-web: gunicorn dirtydeedz.wsgi
+web: gunicorn dirtydeedz.wsgi --log-file -

@@ -27,6 +27,9 @@ def image_list(request):
     elif filter_by == 'uploads':
         images = images.filter(uploaded_by=request.user)
     
+    if selected_tag_ids:
+        images = images.filter(tags__in=selected_tag_ids).distinct()
+    
     images = images.annotate(matching_tags=Count('tags', filter=Q(tags__in=selected_tag_ids)))
 
     if sort_by == 'new':

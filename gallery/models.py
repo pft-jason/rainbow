@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image as PilImage
-import os
 from django.conf import settings
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 import boto3
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -66,14 +66,14 @@ class Image(models.Model):
             buffer = BytesIO()
             img.save(buffer, format='JPEG')
             buffer.seek(0)
-            file_name = f'gallery_{os.path.basename(self.image.name)}'
-            self.gallery_image.save(file_name, ContentFile(buffer.read()), save=False)
+            random_name = f'{uuid.uuid4()}.jpeg'
+            self.gallery_image.save("gallery." + random_name, ContentFile(buffer.read()), save=False)
             
             # Set the full image URL
             if settings.ENVIRONMENT == 'production':
-                self.full_image_url = default_storage.url(self.image.name)
+                self.full_image_url = default_storage.url("full." + random_name)
             else:
-                self.full_image_url = f'/media/{self.image.name}'
+                self.full_image_url = default_storage.url("full." + random_name)
             
             super().save(*args, **kwargs)
     
@@ -81,8 +81,8 @@ class Image(models.Model):
         print(f"##### Full size image {self.image.name} is being deleted.")
         if self.image:
             try:
-                if os.path.isfile(self.image.path):
-                    os.remove(self.image.path)
+                if default_storage.exists(self.image.path):
+                    default_storage.delete(self.image.path)
                     print(f"Local image {self.image.name} is being deleted.")
                 else:
                     s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.image.name)
@@ -93,8 +93,8 @@ class Image(models.Model):
 
         if self.gallery_image:
             try:
-                if os.path.isfile(self.gallery_image.path):
-                    os.remove(self.gallery_image.path)
+                if default_storage.exists(self.gallery_image.path):
+                    default_storage.delete(self.gallery_image.path)
                 else:
                     s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.gallery_image.name)
             except PermissionError as e:

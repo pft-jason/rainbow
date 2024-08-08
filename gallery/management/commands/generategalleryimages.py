@@ -1,3 +1,4 @@
+import uuid
 from django.core.management.base import BaseCommand
 from gallery.models import Image
 from PIL import Image as PilImage
@@ -19,7 +20,8 @@ class Command(BaseCommand):
                 img.thumbnail(output_size)
                 
                 # Save the resized image to the gallery_image field
-                gallery_image_path = os.path.join('gallery_images', os.path.basename(image.image.name))
+                random_name = f'{uuid.uuid4()}.jpeg'
+                gallery_image_path = os.path.join('gallery_images', random_name)
                 img.save(os.path.join(settings.MEDIA_ROOT, gallery_image_path))
                 image.gallery_image = gallery_image_path
                 image.save()

@@ -15,7 +15,6 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'), 
     path('upload/', views.upload_image, name='upload_image'), 
     path('image/<int:pk>/fullscreen/', views.full_screen_image, name='full_screen_image'),
-    path('image/<int:pk>/delete/', views.delete_image, name='delete_image'), 
     path('download/<int:pk>/', views.download_image, name='download_image'),
     path('disclaimer/', views.disclaimer, name='disclaimer'),
     path('code-of-conduct/', views.code_of_conduct, name='code_of_conduct'),

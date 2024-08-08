@@ -8,11 +8,13 @@ from django.contrib.auth import login
 from .forms import ImageUploadForm, CommentForm
 from django.db.models import Q, Count
 from .forms import CustomUserCreationForm
+from .decorators import age_verification_required
 
 
 from django.db.models import Count, Q, IntegerField, Value
 from django.db.models.functions import Coalesce
 
+@age_verification_required
 def image_list(request):
     filter_by = request.GET.get('filter', 'all')
     sort_by = request.GET.get('sort', 'new')
@@ -55,6 +57,7 @@ def image_list(request):
         'all_tags': all_tags,
     })
 
+@age_verification_required
 def image_detail(request, pk):
     image = get_object_or_404(Image, pk=pk)
     is_favorited = False
@@ -102,6 +105,7 @@ def age_verification(request):
     return render(request, 'gallery/age_verification.html')
 
 @login_required
+@age_verification_required
 def profile(request):
     user = request.user
     pending_uploaded_images = Image.objects.filter(uploaded_by=user, moderated=False)
@@ -117,7 +121,7 @@ def profile(request):
     })
 
 
-
+@age_verification_required
 def signup(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -130,6 +134,7 @@ def signup(request):
     return render(request, 'registration/signup.html', {'form': form})
 
 @login_required
+@age_verification_required
 def upload_image(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES, user=request.user)
@@ -145,6 +150,7 @@ def full_screen_image(request, pk):
     return render(request, 'gallery/full_screen_image.html', {'image': image})
 
 @login_required
+@age_verification_required
 def edit_image(request, pk):
     image = get_object_or_404(Image, pk=pk, uploaded_by=request.user)
     if request.method == 'POST':
@@ -157,6 +163,7 @@ def edit_image(request, pk):
     return render(request, 'gallery/edit_image.html', {'form': form, 'image': image})
 
 @login_required
+@age_verification_required
 def delete_image(request, pk):
     image = get_object_or_404(Image, pk=pk, uploaded_by=request.user)
     if request.method == 'POST':
@@ -165,6 +172,7 @@ def delete_image(request, pk):
     return render(request, 'gallery/delete_image.html', {'image': image})
 
 @login_required
+@age_verification_required
 def download_image(request, pk):
     image = get_object_or_404(Image, pk=pk)
     image.downloads += 1

@@ -10,8 +10,6 @@ from dirtydeedz.s3_client import client as s3_client
 import logging
 import uuid
 
-logger = logging.getLogger('custom_logger')
-
 class Category(models.Model):
     name = models.CharField(max_length=100)
 
@@ -78,40 +76,20 @@ class Image(models.Model):
             
             super().save(*args, **kwargs)
     
-def delete(self, *args, **kwargs):
-    if self.image:
-        try:
+    def delete(self, *args, **kwargs):
+        if self.image:
             if settings.ENVIRONMENT == 'development':
-                logger.info(f"Attempting to delete image from local storage: {self.image.name}")
                 default_storage.delete(self.image.name)
-                logger.info(f"Successfully deleted image from local storage: {self.image.name}")
             else:
-                logger.info(f"Attempting to delete image from S3: {self.image.name}")
                 response = s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.image.name)
-                logger.info(f"Successfully deleted image from S3: {self.image.name}, Response: {response}")
-        except PermissionError as e:
-            logger.error(f"PermissionError while deleting image: {e}")
-        except Exception as e:
-            logger.error(f"Unexpected error while deleting image: {e}")
 
-    if self.gallery_image:
-        try:
+
+        if self.gallery_image:
             if settings.ENVIRONMENT == 'development':
-                logger.info(f"Attempting to delete gallery image from local storage: {self.gallery_image.name}")
                 default_storage.delete(self.gallery_image.name)
-                logger.info(f"Successfully deleted gallery image from local storage: {self.gallery_image.name}")
             else:
-                logger.info(f"Attempting to delete gallery image from S3: {self.gallery_image.name}")
                 response = s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.gallery_image.name)
-                logger.info(f"Successfully deleted gallery image from S3: {self.gallery_image.name}, Response: {response}")
-        except PermissionError as e:
-            logger.error(f"PermissionError while deleting gallery image: {e}")
-        except Exception as e:
-            logger.error(f"Unexpected error while deleting gallery image: {e}")
-
-    logger.info(f"Calling super().delete() for object: {self}")
-    super().delete(*args, **kwargs)
-    logger.info(f"Successfully called super().delete() for object: {self}")
+        super().delete(*args, **kwargs)
 
 class Comment(models.Model):
     image = models.ForeignKey(Image, related_name='comments', on_delete=models.CASCADE)

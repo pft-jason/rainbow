@@ -51,7 +51,7 @@ def image_list(request):
     page_obj = paginator.get_page(page_number)
     all_tags = Tag.objects.annotate(num_images=Count('image')).filter(num_images__gt=0)
     
-    return render(request, 'gallery/image_list.html', {
+    return render(request, 'images/image_list.html', {
         'page_obj': page_obj,
         'filter_by': filter_by,
         'sort_by': sort_by,
@@ -88,7 +88,7 @@ def image_detail(request, pk):
         'comments': comments,
         'downloads': image.downloads, 
     }
-    return render(request, 'gallery/image_detail.html', context)
+    return render(request, 'images/image_detail.html', context)
 
 @login_required
 def favorite_image(request, pk):
@@ -104,7 +104,7 @@ def age_verification(request):
         # Set session variable when the user verifies their age
         request.session['age_verified'] = True
         return redirect('image_list')  # Redirect to the main page after verification
-    return render(request, 'gallery/age_verification.html')
+    return render(request, 'administration/age_verification.html')
 
 @login_required
 @age_verification_required
@@ -117,11 +117,10 @@ def profile(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'gallery/profile.html', {
+    return render(request, 'accounts/profile.html', {
         'pending_uploaded_images': pending_uploaded_images,
         'page_obj': page_obj
     })
-
 
 @age_verification_required
 def signup(request):
@@ -145,11 +144,11 @@ def upload_image(request):
             return redirect('image_list')
     else:
         form = ImageUploadForm(user=request.user)
-    return render(request, 'gallery/upload_image.html', {'form': form})
+    return render(request, 'images/upload_image.html', {'form': form})
 
 def full_screen_image(request, pk):
     image = get_object_or_404(Image, pk=pk)
-    return render(request, 'gallery/full_screen_image.html', {'image': image})
+    return render(request, 'images/full_screen_image.html', {'image': image})
 
 @login_required
 @age_verification_required
@@ -162,7 +161,7 @@ def edit_image(request, pk):
             return redirect('image_detail', pk=image.pk)
     else:
         form = ImageUploadForm(instance=image, user=request.user)
-    return render(request, 'gallery/edit_image.html', {'form': form, 'image': image})
+    return render(request, 'images/edit_image.html', {'form': form, 'image': image})
 
 @login_required
 @age_verification_required
@@ -171,7 +170,7 @@ def delete_image(request, pk):
     if request.method == 'POST':
         image.delete()
         return redirect('profile')
-    return render(request, 'gallery/delete_image.html', {'image': image})
+    return render(request, 'images/delete_image.html', {'image': image})
 
 @login_required
 @age_verification_required
@@ -193,10 +192,10 @@ def download_image(request, pk):
     return redirect(request.META.get('HTTP_REFERER', 'image_detail', pk=pk))
 
 def disclaimer(request):
-    return render(request, 'gallery/disclaimer.html')
+    return render(request, 'administration/disclaimer.html')
 
 def code_of_conduct(request):
-    return render(request, 'gallery/code_of_conduct.html')
+    return render(request, 'administration/code_of_conduct.html')
 
 def delete_all_images(request):
     if request.method == 'POST':

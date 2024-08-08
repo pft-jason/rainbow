@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,65 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Dirtydeedz{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
-    <style>
-        html {
-            overflow-y: scroll;
-        }
-        .custom-accordion-header {
-            background-color: #f8f9fa;
-            /* Light grey background */
-            color: #007bff;
-            /* Bootstrap primary blue for text */
-            font-weight: bold;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .custom-accordion-header:not(.collapsed) {
-            background-color: #e9ecef;
-            /* Slightly darker when expanded */
-        }
-
-        .custom-accordion-header:hover {
-            background-color: #e2e6ea;
-            /* Darker grey on hover */
-        }
-
-        .selected-tags {
-            font-weight: normal;
-            /* Ensure this text is not bold */
-        }
-
-        /* Navbar styling */
-        .navbar {
-            background-color: #343a40;
-            /* Dark theme for navbar */
-        }
-
-        .navbar-brand,
-        .nav-link {
-            color: #ffffff !important;
-            /* White text color for brand and links */
-        }
-
-        .nav-link:hover {
-            color: #adb5bd !important;
-            /* Light grey on hover */
-        }
-
-        .nav-link.active {
-            font-weight: bold;
-            color: #f8f9fa !important;
-            /* Slightly different color for active link */
-        }
-
-        .mb-3 label {
-            font-weight: bold;
-        }
-
-        .form-control {
-            border-radius: 0.25rem;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 
 <body>

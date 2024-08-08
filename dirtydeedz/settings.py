@@ -155,7 +155,7 @@ LOGGING = {
             'propagate': True,
         },
         # Add your custom logger here
-        'your_custom_logger': {
+        'custom_logger': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,

@@ -10,7 +10,7 @@ from dirtydeedz.s3_client import client as s3_client
 import logging
 import uuid
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('custom_logger')
 
 class Category(models.Model):
     name = models.CharField(max_length=100)

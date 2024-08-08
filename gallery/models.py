@@ -6,7 +6,10 @@ from django.conf import settings
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+import boto3
+import logging
 
+logger = logging.getLogger(__name__)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -75,12 +78,31 @@ class Image(models.Model):
             super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
+        s3_client = boto3.client('s3')
+        print(f"##### Full size image {self.image.name} is being deleted.")
         if self.image:
-            if os.path.isfile(self.image.path):
-                os.remove(self.image.path)
+            try:
+                if os.path.isfile(self.image.path):
+                    os.remove(self.image.path)
+                    print(f"Local image {self.image.name} is being deleted.")
+                else:
+                    s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.image.name)
+            except PermissionError as e:
+                logger.error(f"PermissionError: {e}")
+            except Exception as e:
+                logger.error(f"Unexpected error: {e}") 
+
         if self.gallery_image:
-            if os.path.isfile(self.gallery_image.path):
-                os.remove(self.gallery_image.path)
+            try:
+                if os.path.isfile(self.gallery_image.path):
+                    os.remove(self.gallery_image.path)
+                else:
+                    s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.gallery_image.name)
+            except PermissionError as e:
+                logger.error(f"PermissionError: {e}")
+            except Exception as e:
+                logger.error(f"Unexpected error: {e}")
+
         super().delete(*args, **kwargs)
 
 class Comment(models.Model):

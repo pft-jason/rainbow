@@ -78,7 +78,6 @@ class Image(models.Model):
             super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
-        s3_client = boto3.client('s3')
         print(f"##### Full size image {self.image.name} is being deleted.")
         if self.image:
             try:

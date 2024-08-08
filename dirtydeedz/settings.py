@@ -11,11 +11,11 @@ def get_env_variable(var_name):
         return os.getenv(var_name)
     except KeyError:
         raise ImproperlyConfigured(f"The {var_name} setting must not be empty.")
+ENVIRONMENT = get_env_variable('ENVIRONMENT')
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# DEBUG = os.getenv('DEBUG') == 'True'
-DEBUG=True
+DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
@@ -76,27 +76,6 @@ DATABASES = {
 
 WSGI_APPLICATION = 'dirtydeedz.wsgi.application'
 
-ENVIRONMENT = get_env_variable('ENVIRONMENT')
-
-if ENVIRONMENT == 'development':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': get_env_variable('DB_NAME'),
-            'USER': get_env_variable('DB_USER'),
-            'PASSWORD': get_env_variable('DB_PASSWORD'),
-            'HOST': get_env_variable('DB_HOST'),
-            'PORT': get_env_variable('DB_PORT'),
-        }
-    }
-
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -140,6 +119,7 @@ if ENVIRONMENT == 'development':
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 else:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -152,8 +132,6 @@ else:
     }
     AWS_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_ENDPOINT_URL}/{AWS_LOCATION}/'
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 WSGI_APPLICATION = 'dirtydeedz.wsgi.application'

@@ -36,7 +36,7 @@ class OfficialTag(models.Model):
 class Image(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='gallery_images/', default='gallery_images/default.jpg')
-    full_image_url = models.URLField(max_length=300, default='https://via.placeholder.com/512')
+    full_image_url = models.URLField(max_length=500, default='https://via.placeholder.com/512')
     gallery_image = models.ImageField(upload_to='gallery_images/', null=True, blank=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)

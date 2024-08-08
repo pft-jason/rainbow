@@ -78,12 +78,10 @@ class Image(models.Model):
             super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
-        print(f"##### Full size image {self.image.name} is being deleted.")
         if self.image:
             try:
-                if default_storage.exists(self.image.path):
-                    default_storage.delete(self.image.path)
-                    print(f"Local image {self.image.name} is being deleted.")
+                if settings.ENVIRONMENT == 'development':
+                    default_storage.delete(self.image.name)
                 else:
                     s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.image.name)
             except PermissionError as e:
@@ -93,8 +91,8 @@ class Image(models.Model):
 
         if self.gallery_image:
             try:
-                if default_storage.exists(self.gallery_image.path):
-                    default_storage.delete(self.gallery_image.path)
+                if settings.ENVIRONMENT == 'development':
+                    default_storage.delete(self.gallery_image.name)
                 else:
                     s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.gallery_image.name)
             except PermissionError as e:

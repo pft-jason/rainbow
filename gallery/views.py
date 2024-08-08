@@ -10,6 +10,7 @@ from django.db.models import Q, Count
 from .forms import CustomUserCreationForm
 from .decorators import age_verification_required
 from dirtydeedz.s3_client import client as s3_client
+from django.conf import settings
 
 
 from django.db.models import Count, Q, IntegerField, Value

@@ -134,6 +134,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+
 if ENVIRONMENT == 'development':
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

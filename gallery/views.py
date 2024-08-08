@@ -9,6 +9,7 @@ from .forms import ImageUploadForm, CommentForm
 from django.db.models import Q, Count
 from .forms import CustomUserCreationForm
 from .decorators import age_verification_required
+from dirtydeedz.s3_client import client as s3_client
 
 
 from django.db.models import Count, Q, IntegerField, Value
@@ -195,3 +196,15 @@ def disclaimer(request):
 
 def code_of_conduct(request):
     return render(request, 'gallery/code_of_conduct.html')
+
+def delete_all_images(request):
+    if request.method == 'POST':
+        for image in Image.objects.all():
+            if image.image:
+                s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=image.image.name)
+            if image.gallery_image:
+                s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=image.gallery_image.name)
+
+        return redirect('image_list')
+
+    return redirect('image_list')

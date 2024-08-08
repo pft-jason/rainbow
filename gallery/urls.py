@@ -18,4 +18,5 @@ urlpatterns = [
     path('download/<int:pk>/', views.download_image, name='download_image'),
     path('disclaimer/', views.disclaimer, name='disclaimer'),
     path('code-of-conduct/', views.code_of_conduct, name='code_of_conduct'),
+    path('delete_all_images/', views.delete_all_images, name='delete_all_images'),
 ]

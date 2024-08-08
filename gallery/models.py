@@ -6,8 +6,11 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 import boto3
+
 import logging
 import uuid
+
+s3_client = boto3.client('s3')
 
 logger = logging.getLogger(__name__)
 

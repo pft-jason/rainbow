@@ -5,7 +5,7 @@ from django.conf import settings
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from dirtydeedz.s3_client import client
+from dirtydeedz.s3_client import client as s3_client
 
 import logging
 import uuid

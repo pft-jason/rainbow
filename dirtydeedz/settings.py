@@ -129,5 +129,5 @@ MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}/'
 WSGI_APPLICATION = 'dirtydeedz.wsgi.application'
 
 DO_BUCKET_NAME = os.getenv('DO_BUCKET_NAME', 'default-bucket-name')
-DO_BASE_URL = os.getenv('DO_BASE_URL', 'https://default-base-url.com')
+DO_SPACES_ENDPOINT = os.getenv('DO_SPACES_ENDPOINT', 'https://default-base-url.com')
 

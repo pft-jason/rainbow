@@ -68,12 +68,12 @@ class ImageUploadForm(forms.ModelForm):
 
             # Upload full image to Spaces
             full_image.seek(0)  # Reset file pointer to the beginning
-            client.put_object(Bucket=get_env_variable('DO_BUCKET_NAME'), Key=full_image_name, Body=full_image.read(), ACL='public-read')
-            image.full_image_url = f'{get_env_variable("DO_SPACES_ENDPOINT")}/{get_env_variable("DO_BUCKET_NAME")}/{full_image_name}'
+            client.put_object(Bucket=settings.DO_BUCKET_NAME, Key=full_image_name, Body=full_image.read(), ACL='public-read')
+            image.full_image_url = f'{settings.DO_SPACES_ENDPOINT}/{settings.DO_BUCKET_NAME}/{full_image_name}'
 
             # Upload gallery image to Spaces
-            client.put_object(Bucket=get_env_variable('DO_BUCKET_NAME'), Key=gallery_image_name, Body=buffer.read(), ACL='public-read')
-            image.gallery_image_url = f'{get_env_variable("DO_SPACES_ENDPOINT")}/{get_env_variable("DO_BUCKET_NAME")}/{gallery_image_name}'
+            client.put_object(Bucket=settings.DO_BUCKET_NAME, Key=gallery_image_name, Body=buffer.read(), ACL='public-read')
+            image.gallery_image_url = f'{settings.DO_SPACES_ENDPOINT}/{settings.DO_BUCKET_NAME}/{gallery_image_name}'
 
         if commit:
             image.save()

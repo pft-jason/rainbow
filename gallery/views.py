@@ -11,7 +11,7 @@ from .forms import CustomUserCreationForm
 from .decorators import age_verification_required
 from dirtydeedz.s3_client import client as s3_client
 from django.conf import settings
-
+from dirtydeedz.s3_client import client  # Import the configured s3 client
 
 from django.db.models import Count, Q, IntegerField, Value
 from django.db.models.functions import Coalesce
@@ -168,8 +168,20 @@ def edit_image(request, pk):
 def delete_image(request, pk):
     image = get_object_or_404(Image, pk=pk, uploaded_by=request.user)
     if request.method == 'POST':
+        # Delete the full image from the bucket
+        if image.full_image_url:
+            full_image_key = image.full_image_url.split('/')[-1]
+            client.delete_object(Bucket='rainbow-images-dev', Key=full_image_key)
+        
+        # Delete the gallery image from the bucket
+        if image.gallery_image_url:
+            gallery_image_key = image.gallery_image_url.split('/')[-1]
+            client.delete_object(Bucket='rainbow-images-dev', Key=gallery_image_key)
+        
+        # Delete the image from the database
         image.delete()
         return redirect('profile')
+    
     return render(request, 'images/delete_image.html', {'image': image})
 
 @login_required

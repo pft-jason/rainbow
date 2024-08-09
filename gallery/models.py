@@ -37,58 +37,31 @@ class OfficialTag(models.Model):
 
 class Image(models.Model):
     title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='gallery_images/', default='gallery_images/default.jpg')
+    full_image = models.ImageField(upload_to='', default='default.jpg')
     full_image_url = models.URLField(max_length=500, default='https://via.placeholder.com/512')
-    gallery_image = models.ImageField(upload_to='gallery_images/', null=True, blank=True)
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    gallery_image = models.ImageField(upload_to='', default='default.jpg')
+    gallery_image_url = models.URLField(max_length=500, default='https://via.placeholder.com/512')
+    title = models.CharField(max_length=100) 
     description = models.TextField(blank=True)
     categories = models.ManyToManyField(Category, blank=True)
-    official_tag = models.ManyToManyField(OfficialTag, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    official_tag = models.ManyToManyField(OfficialTag, blank=True)
     favorites = models.ManyToManyField(User, related_name='favorite_images', blank=True)
-    downloads = models.IntegerField(default=0)
+    downloads = models.IntegerField(default=0) 
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
     moderated = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        
-        if self.image and not self.gallery_image:
-            img = PilImage.open(self.image)
-            output_size = (512, 512)  # Define the size for the gallery image
-            img.thumbnail(output_size)
-            
-            # Save the resized image to the gallery_image field
-            buffer = BytesIO()
-            img.save(buffer, format='JPEG')
-            buffer.seek(0)
-            random_name = f'{uuid.uuid4()}.jpeg'
-            self.gallery_image.save("gallery." + random_name, ContentFile(buffer.read()), save=False)
-            
-            # Set the full image URL
-            if settings.ENVIRONMENT == 'production':
-                self.full_image_url = default_storage.url("full." + random_name)
-            else:
-                self.full_image_url = default_storage.url("full." + random_name)
-            
-            super().save(*args, **kwargs)
+        return self.title            
     
     def delete(self, *args, **kwargs):
-        if self.image:
-            if settings.ENVIRONMENT == 'development':
-                default_storage.delete(self.image.name)
-            else:
-                response = s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.image.name)
-
+        if self.full_image:
+           response = s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.full_image.name)
 
         if self.gallery_image:
-            if settings.ENVIRONMENT == 'development':
-                default_storage.delete(self.gallery_image.name)
-            else:
-                response = s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.gallery_image.name)
+            response = s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.gallery_image.name)
+       
         super().delete(*args, **kwargs)
 
 class Comment(models.Model):

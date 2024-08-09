@@ -121,7 +121,9 @@ AWS_S3_ENDPOINT_URL = get_env_variable('DO_SPACES_ENDPOINT')
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
-MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_ENDPOINT_URL}/'
+
+#MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_ENDPOINT_URL}/'
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}/'
 
 # DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 WSGI_APPLICATION = 'dirtydeedz.wsgi.application'

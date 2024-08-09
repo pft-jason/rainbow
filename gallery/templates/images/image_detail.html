@@ -9,7 +9,7 @@
             <h1 class="display-4">{{ image.title }}</h1>
             <div class="card mb-3">
                 <a href="{% url 'full_screen_image' image.pk %}">
-                    <img src="{{ image.image.url }}" alt="{{ image.title }}" style="max-width: 800px; width: 100%; height: auto;" class="img-fluid">
+                    <img src="{{ image.full_image_url }}" alt="{{ image.title }}" style="max-width: 800px; width: 100%; height: auto;" class="img-fluid">
                 </a>
                 <div class="card-body">
                     <h5 class="card-title">Description</h5>

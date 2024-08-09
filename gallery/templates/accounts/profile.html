@@ -22,7 +22,7 @@
                     {% for image in pending_uploaded_images %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <img src="{{ image.gallery_image.url }}" alt="{{ image.title }}" class="img-fluid" style="max-width: 100px; height: auto;">
+                            <img src="{{ image.gallery_image_url }}" alt="{{ image.title }}" class="img-fluid" style="max-width: 100px; height: auto;">
                             <strong>{{ image.title }}</strong>
                         </div>
                         <div>

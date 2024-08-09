@@ -8,7 +8,7 @@ from PIL import Image as PilImage
 from io import BytesIO
 import uuid
 from dirtydeedz.s3_client import client
-from .settings import get_env_variable
+from django.conf import settings 
 
 
 class ImageUploadForm(forms.ModelForm):

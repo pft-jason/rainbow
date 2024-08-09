@@ -128,3 +128,6 @@ MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}/'
 # DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 WSGI_APPLICATION = 'dirtydeedz.wsgi.application'
 
+DO_BUCKET_NAME = os.getenv('DO_BUCKET_NAME', 'default-bucket-name')
+DO_BASE_URL = os.getenv('DO_BASE_URL', 'https://default-base-url.com')
+

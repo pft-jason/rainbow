@@ -31,7 +31,10 @@
                                 {% if is_favorited %}Unfavorite{% else %}Favorite{% endif %}
                             </button>
                         </form>
-                        <a href="{% url 'download_image' image.pk %}" class="btn btn-success">Download</a>
+                        <!-- <a href="{% url 'download_image' image.pk %}" class="btn btn-success">Download</a> -->
+                        <button data-download-url="{% url 'download_image' image.pk %}" onclick="downloadAndRedirect(this)" class="btn btn-success">
+                            Download Image
+                        </button>
                     {% else %}
                         <a href="{% url 'login' %}" class="btn btn-primary">Login to favorite or download images</a>
                     {% endif %}
@@ -82,5 +85,23 @@
         }
     });
 </script>
+
+<script>
+    function downloadAndRedirect(button) {
+        var downloadUrl = button.getAttribute('data-download-url');
+        var redirectUrl = window.location.href;
+
+        // Create an invisible iframe to trigger the download
+        var iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = downloadUrl;
+        document.body.appendChild(iframe);
+
+        // Redirect to the same page after a short delay
+        setTimeout(function() {
+            window.location.href = redirectUrl;
+        }, 1000); // Adjust the delay as needed
+    }
+  </script>
 
 {% endblock %}

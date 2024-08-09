@@ -190,14 +190,17 @@ def download_image(request, pk):
     image = get_object_or_404(Image, pk=pk)
     image.downloads += 1
     image.save()
-    response = HttpResponse(image.image, content_type='application/octet-stream')
-    response['Content-Disposition'] = f'attachment; filename="{image.image.name}"'
 
-    # Redirect to the same page after download
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('image_detail', pk=pk)
+    # Fetch the image from the new bucket storage system
+    image_key = image.full_image_url.split('/')[-1]
+    print(settings.AWS_STORAGE_BUCKET_NAME + image_key)
+    image_obj = s3_client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=image_key)
+    image_data = image_obj['Body'].read()
+
+    response = HttpResponse(image_data, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{image_key}"'
+
+    return response
 
     
     # Redirect to the same page after download
